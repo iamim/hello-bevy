@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::prelude::shape;
 
 #[derive(Component)]
 struct Player;
@@ -36,8 +37,8 @@ fn setup(
     // Player rectangle (cube)
     commands.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Box::new(1.0, 0.2, 1.0))),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            mesh: Mesh3d(meshes.add(Mesh::from(shape::Box::new(1.0, 0.2, 1.0)))),
+            material: MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6).into())),
             transform: Transform::from_xyz(0.0, 0.1, 0.0),
             ..default()
         },
@@ -46,30 +47,30 @@ fn setup(
 
     // Ground plane
     commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(5.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+        mesh: Mesh3d(meshes.add(shape::Plane::from_size(5.0).into())),
+        material: MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3).into())),
         ..default()
     });
 }
 
 fn player_movement(
     mut query: Query<&mut Transform, With<Player>>,
-    keyboard: Res<Input<KeyCode>>,
+    keyboard: Res<Input<Key>>,
     time: Res<Time>,
 ) {
     let mut player_transform = query.single_mut();
     let speed = 2.0;
 
-    if keyboard.pressed(KeyCode::W) {
-        player_transform.translation.z -= speed * time.delta_seconds();
+    if keyboard.pressed(Key::W) {
+        player_transform.translation.z -= speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::S) {
-        player_transform.translation.z += speed * time.delta_seconds();
+    if keyboard.pressed(Key::S) {
+        player_transform.translation.z += speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::A) {
-        player_transform.translation.x -= speed * time.delta_seconds();
+    if keyboard.pressed(Key::A) {
+        player_transform.translation.x -= speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::D) {
-        player_transform.translation.x += speed * time.delta_seconds();
+    if keyboard.pressed(Key::D) {
+        player_transform.translation.x += speed * time.delta_secs();
     }
 }
