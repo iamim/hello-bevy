@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::prelude::shape;
 
 #[derive(Component)]
 struct Player;
@@ -55,22 +54,22 @@ fn setup(
 
 fn player_movement(
     mut query: Query<&mut Transform, With<Player>>,
-    keyboard: Res<Input<Key>>,
+    keyboard: Res<Input<KeyCode>>,
     time: Res<Time>,
 ) {
     let mut player_transform = query.single_mut();
     let speed = 2.0;
 
-    if keyboard.pressed(Key::W) {
+    if keyboard.pressed(KeyCode::W) {
         player_transform.translation.z -= speed * time.delta_secs();
     }
-    if keyboard.pressed(Key::S) {
+    if keyboard.pressed(KeyCode::S) {
         player_transform.translation.z += speed * time.delta_secs();
     }
-    if keyboard.pressed(Key::A) {
+    if keyboard.pressed(KeyCode::A) {
         player_transform.translation.x -= speed * time.delta_secs();
     }
-    if keyboard.pressed(Key::D) {
+    if keyboard.pressed(KeyCode::D) {
         player_transform.translation.x += speed * time.delta_secs();
     }
 }
