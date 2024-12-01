@@ -14,5 +14,5 @@ fn setup(mut commands: Commands) {
 }
 
 fn hello_world() {
-    println!("hello world");
+    println!("hello world 2");
 }
