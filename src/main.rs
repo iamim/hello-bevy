@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::shape};
 
 #[derive(Component)]
 struct Player;
@@ -60,16 +60,16 @@ fn player_movement(
     let mut player_transform = query.single_mut();
     let speed = 2.0;
 
-    if keyboard.pressed(KeyCode::W) {
+    if keyboard.pressed(KeyCode::KeyW) {
         player_transform.translation.z -= speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::S) {
+    if keyboard.pressed(KeyCode::KeyS) {
         player_transform.translation.z += speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::A) {
+    if keyboard.pressed(KeyCode::KeyA) {
         player_transform.translation.x -= speed * time.delta_secs();
     }
-    if keyboard.pressed(KeyCode::D) {
+    if keyboard.pressed(KeyCode::KeyD) {
         player_transform.translation.x += speed * time.delta_secs();
     }
 }
