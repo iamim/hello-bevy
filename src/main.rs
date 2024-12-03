@@ -1,6 +1,9 @@
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Default)]
+#[require(Transform, Visibility, SceneRoot)]
 struct Player;
 
 fn main() {
@@ -11,60 +14,54 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+const CAMERA_DISTANCE: f32 = 40.0;
+
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Camera
-    commands.spawn(Camera3d {
-        transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    });
-
-    // Light
-    commands.spawn(PointLight {
-        intensity: 1500.0,
-        shadows_enabled: true,
-        transform: Transform::from_xyz(4.0, 8.0, 4.0),
-        ..default()
-    });
-
-    // Player rectangle (cube)
     commands.spawn((
-        (
-            Mesh3d(meshes.add(Mesh::from(shape::Box::new(1.0, 0.2, 1.0)))),
-            MeshMaterial3d(materials.add(Color::srgb(0.8, 0.7, 0.6).into())),
-            Transform::from_xyz(0.0, 0.1, 0.0),
-        ),
-        Player,
+        Camera3d::default(),
+        Transform::from_xyz(0.0, CAMERA_DISTANCE, 0.0).looking_at(Vec3::ZERO, Vec3::Z),
     ));
 
-    // Ground plane
+    // Light
     commands.spawn((
-        Mesh3d(meshes.add(shape::Plane::from_size(5.0).into())),
-        MeshMaterial3d(materials.add(Color::srgb(0.3, 0.5, 0.3).into())),
+        PointLight {
+            intensity: 1500.0,
+            shadows_enabled: true,
+            ..default()
+        },
+        Transform::from_xyz(0.0, 2.0, 0.0),
+    ));
+
+    // Spawn player
+    commands.spawn((
+        Player,
+        SceneRoot(asset_server.load("Buggy.glb#Scene0")),
+        Transform {
+            rotation: Quat::from_rotation_y(PI / 2.0),
+            ..default()
+        },
     ));
 }
 
 fn player_movement(
     mut query: Query<&mut Transform, With<Player>>,
-    keyboard: Res<Input<KeyCode>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
 ) {
     let mut player_transform = query.single_mut();
     let speed = 2.0;
 
     if keyboard.pressed(KeyCode::KeyW) {
-        player_transform.translation.z -= speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyS) {
         player_transform.translation.z += speed * time.delta_secs();
     }
+    if keyboard.pressed(KeyCode::KeyS) {
+        player_transform.translation.z -= speed * time.delta_secs();
+    }
     if keyboard.pressed(KeyCode::KeyA) {
-        player_transform.translation.x -= speed * time.delta_secs();
+        player_transform.translation.x += speed * time.delta_secs();
     }
     if keyboard.pressed(KeyCode::KeyD) {
-        player_transform.translation.x += speed * time.delta_secs();
+        player_transform.translation.x -= speed * time.delta_secs();
     }
 }
