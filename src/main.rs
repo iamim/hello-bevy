@@ -32,9 +32,9 @@ fn setup(
     commands.spawn((
         Player,
         RigidBody::Dynamic,
-        Collider::cuboid(1.0, 1.0, 1.0),
+        Collider::sphere(1.0),
         AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
-        Mesh3d(meshes.add(Cuboid::from_length(1.0))),
+        Mesh3d(meshes.add(Sphere::new(1.0))),
         MeshMaterial3d(materials.add(Color::WHITE)),
         Transform::from_xyz(0.0, 4.0, 0.0),
     ));
