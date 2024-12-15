@@ -9,7 +9,7 @@ fn main() {
     App::new()
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_systems(Startup, setup)
-        // .add_systems(Update, player_movement)
+        .add_systems(Update, player_movement)
         .run();
 }
 
@@ -30,6 +30,7 @@ fn setup(
 
     // Dynamic physics object with a collision shape and initial angular velocity
     commands.spawn((
+        Player,
         RigidBody::Dynamic,
         Collider::cuboid(1.0, 1.0, 1.0),
         AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
@@ -47,31 +48,30 @@ fn setup(
         Transform::from_xyz(4.0, 8.0, 4.0),
     ));
 
-
     commands.spawn((
         Camera3d::default(),
-        Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Dir3::Y),
+        Transform::from_xyz(0.0, CAMERA_DISTANCE, -CAMERA_DISTANCE).looking_at(Vec3::ZERO, Vec3::Z),
     ));
 }
 
-// fn player_movement(
-//     mut query: Query<&mut Transform, With<Player>>,
-//     keyboard: Res<ButtonInput<KeyCode>>,
-//     time: Res<Time>,
-// ) {
-//     let mut player_transform = query.single_mut();
-//     let speed = 2.0;
-//
-//     if keyboard.pressed(KeyCode::KeyE) {
-//         player_transform.translation.z += speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyD) {
-//         player_transform.translation.z -= speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyS) {
-//         player_transform.translation.x += speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyF) {
-//         player_transform.translation.x -= speed * time.delta_secs();
-//     }
-// }
+fn player_movement(
+    mut query: Query<&mut Transform, With<Player>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    let mut player_transform = query.single_mut();
+    let speed = 2.0;
+
+    if keyboard.pressed(KeyCode::KeyE) {
+        player_transform.translation.z += speed * time.delta_secs();
+    }
+    if keyboard.pressed(KeyCode::KeyD) {
+        player_transform.translation.z -= speed * time.delta_secs();
+    }
+    if keyboard.pressed(KeyCode::KeyS) {
+        player_transform.translation.x += speed * time.delta_secs();
+    }
+    if keyboard.pressed(KeyCode::KeyF) {
+        player_transform.translation.x -= speed * time.delta_secs();
+    }
+}
