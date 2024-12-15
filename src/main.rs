@@ -1,5 +1,4 @@
-use std::f32::consts::PI;
-
+use avian3d::prelude::*;
 use bevy::prelude::*;
 
 #[derive(Component, Default)]
@@ -8,60 +7,71 @@ struct Player;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_systems(Startup, setup)
-        .add_systems(Update, player_movement)
+        // .add_systems(Update, player_movement)
         .run();
 }
 
 const CAMERA_DISTANCE: f32 = 40.0;
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    // Camera
+fn setup(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    // Static physics object with a collision shape
     commands.spawn((
-        Camera3d::default(),
-        Transform::from_xyz(0.0, CAMERA_DISTANCE, 0.0).looking_at(Vec3::ZERO, Vec3::Z),
+        RigidBody::Static,
+        Collider::cylinder(4.0, 0.1),
+        Mesh3d(meshes.add(Cylinder::new(4.0, 0.1))),
+        MeshMaterial3d(materials.add(Color::WHITE)),
+    ));
+
+    // Dynamic physics object with a collision shape and initial angular velocity
+    commands.spawn((
+        RigidBody::Dynamic,
+        Collider::cuboid(1.0, 1.0, 1.0),
+        AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
+        Mesh3d(meshes.add(Cuboid::from_length(1.0))),
+        MeshMaterial3d(materials.add(Color::WHITE)),
+        Transform::from_xyz(0.0, 4.0, 0.0),
     ));
 
     // Light
     commands.spawn((
         PointLight {
-            intensity: 1500.0,
             shadows_enabled: true,
             ..default()
         },
-        Transform::from_xyz(0.0, 2.0, 0.0),
+        Transform::from_xyz(4.0, 8.0, 4.0),
     ));
 
-    // Spawn player
+
     commands.spawn((
-        Player,
-        SceneRoot(asset_server.load("Buggy.glb#Scene0")),
-        Transform {
-            rotation: Quat::from_rotation_y(PI / 2.0),
-            ..default()
-        },
+        Camera3d::default(),
+        Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Dir3::Y),
     ));
 }
 
-fn player_movement(
-    mut query: Query<&mut Transform, With<Player>>,
-    keyboard: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
-) {
-    let mut player_transform = query.single_mut();
-    let speed = 2.0;
-
-    if keyboard.pressed(KeyCode::KeyW) {
-        player_transform.translation.z += speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyS) {
-        player_transform.translation.z -= speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyA) {
-        player_transform.translation.x += speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyD) {
-        player_transform.translation.x -= speed * time.delta_secs();
-    }
-}
+// fn player_movement(
+//     mut query: Query<&mut Transform, With<Player>>,
+//     keyboard: Res<ButtonInput<KeyCode>>,
+//     time: Res<Time>,
+// ) {
+//     let mut player_transform = query.single_mut();
+//     let speed = 2.0;
+//
+//     if keyboard.pressed(KeyCode::KeyE) {
+//         player_transform.translation.z += speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyD) {
+//         player_transform.translation.z -= speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyS) {
+//         player_transform.translation.x += speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyF) {
+//         player_transform.translation.x -= speed * time.delta_secs();
+//     }
+// }
