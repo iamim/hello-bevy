@@ -38,7 +38,6 @@ fn setup(
         Mesh3d(meshes.add(Sphere::new(1.0))),
         MeshMaterial3d(materials.add(Color::WHITE)),
         Transform::from_xyz(0.0, 4.0, 0.0),
-
         ExternalForce::new(Vec3::ZERO),
     ));
 
@@ -58,37 +57,49 @@ fn setup(
 }
 
 fn player_apply_force(
-    mut query: Query<&mut ExternalForce, With<Player>>,
+    mut query: Query<(&mut ExternalForce, &mut MeshMaterial3d<StandardMaterial>), With<Player>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
     keyboard: Res<ButtonInput<KeyCode>>,
 ) {
-    let mut player_external_force = query.single_mut();
+    let (mut player_external_force, mut material) = query.single_mut();
 
     if keyboard.just_pressed(KeyCode::KeyE) {
         player_external_force.apply_force(Vec3::Z * 10.0);
+        material.0 = materials.add(Color::BLACK);
     }
+
     if keyboard.just_released(KeyCode::KeyE) {
         player_external_force.apply_force(Vec3::ZERO);
+        material.0 = materials.add(Color::WHITE);
+    }
+
+    if keyboard.just_pressed(KeyCode::KeyS) {
+        player_external_force.apply_force(Vec3::X * 10.0);
+        material.0 = materials.add(Color::BLACK);
+    }
+
+    if keyboard.just_released(KeyCode::KeyS) {
+        player_external_force.apply_force(Vec3::ZERO);
+        material.0 = materials.add(Color::WHITE);
+    }
+
+    if keyboard.just_pressed(KeyCode::KeyD) {
+        player_external_force.apply_force(-Vec3::Z * 10.0);
+        material.0 = materials.add(Color::BLACK);
+    }
+
+    if keyboard.just_released(KeyCode::KeyD) {
+        player_external_force.apply_force(Vec3::ZERO);
+        material.0 = materials.add(Color::WHITE);
+    }
+
+    if keyboard.just_pressed(KeyCode::KeyF) {
+        player_external_force.apply_force(-Vec3::X * 10.0);
+        material.0 = materials.add(Color::BLACK);
+    }
+
+    if keyboard.just_released(KeyCode::KeyF) {
+        player_external_force.apply_force(Vec3::ZERO);
+        material.0 = materials.add(Color::WHITE);
     }
 }
-
-// fn player_movement(
-//     mut query: Query<&mut Transform, With<Player>>,
-//     keyboard: Res<ButtonInput<KeyCode>>,
-//     time: Res<Time>,
-// ) {
-//     let mut player_transform = query.single_mut();
-//     let speed = 2.0;
-//
-//     if keyboard.pressed(KeyCode::KeyE) {
-//         player_transform.translation.z += speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyD) {
-//         player_transform.translation.z -= speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyS) {
-//         player_transform.translation.x += speed * time.delta_secs();
-//     }
-//     if keyboard.pressed(KeyCode::KeyF) {
-//         player_transform.translation.x -= speed * time.delta_secs();
-//     }
-// }
