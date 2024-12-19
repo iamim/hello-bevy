@@ -69,7 +69,7 @@ fn player_apply_force(
     }
 
     if keyboard.just_released(KeyCode::KeyE) {
-        player_external_force.apply_force(Vec3::ZERO);
+        player_external_force.clear();
         material.0 = materials.add(Color::WHITE);
     }
 
@@ -79,7 +79,7 @@ fn player_apply_force(
     }
 
     if keyboard.just_released(KeyCode::KeyS) {
-        player_external_force.apply_force(Vec3::ZERO);
+        player_external_force.clear();
         material.0 = materials.add(Color::WHITE);
     }
 
@@ -89,7 +89,7 @@ fn player_apply_force(
     }
 
     if keyboard.just_released(KeyCode::KeyD) {
-        player_external_force.apply_force(Vec3::ZERO);
+        player_external_force.clear();
         material.0 = materials.add(Color::WHITE);
     }
 
@@ -99,7 +99,7 @@ fn player_apply_force(
     }
 
     if keyboard.just_released(KeyCode::KeyF) {
-        player_external_force.apply_force(Vec3::ZERO);
+        player_external_force.clear();
         material.0 = materials.add(Color::WHITE);
     }
 }
