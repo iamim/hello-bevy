@@ -9,7 +9,8 @@ fn main() {
     App::new()
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_systems(Startup, setup)
-        .add_systems(Update, player_movement)
+        // .add_systems(Update, player_movement)
+        .add_systems(Update, player_apply_force)
         .run();
 }
 
@@ -37,6 +38,8 @@ fn setup(
         Mesh3d(meshes.add(Sphere::new(1.0))),
         MeshMaterial3d(materials.add(Color::WHITE)),
         Transform::from_xyz(0.0, 4.0, 0.0),
+
+        ExternalForce::new(Vec3::ZERO),
     ));
 
     // Light
@@ -54,24 +57,38 @@ fn setup(
     ));
 }
 
-fn player_movement(
-    mut query: Query<&mut Transform, With<Player>>,
+fn player_apply_force(
+    mut query: Query<&mut ExternalForce, With<Player>>,
     keyboard: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>,
 ) {
-    let mut player_transform = query.single_mut();
-    let speed = 2.0;
+    let mut player_external_force = query.single_mut();
 
-    if keyboard.pressed(KeyCode::KeyE) {
-        player_transform.translation.z += speed * time.delta_secs();
+    if keyboard.just_pressed(KeyCode::KeyE) {
+        player_external_force.apply_force(Vec3::Z * 10.0);
     }
-    if keyboard.pressed(KeyCode::KeyD) {
-        player_transform.translation.z -= speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyS) {
-        player_transform.translation.x += speed * time.delta_secs();
-    }
-    if keyboard.pressed(KeyCode::KeyF) {
-        player_transform.translation.x -= speed * time.delta_secs();
+    if keyboard.just_released(KeyCode::KeyE) {
+        player_external_force.apply_force(Vec3::ZERO);
     }
 }
+
+// fn player_movement(
+//     mut query: Query<&mut Transform, With<Player>>,
+//     keyboard: Res<ButtonInput<KeyCode>>,
+//     time: Res<Time>,
+// ) {
+//     let mut player_transform = query.single_mut();
+//     let speed = 2.0;
+//
+//     if keyboard.pressed(KeyCode::KeyE) {
+//         player_transform.translation.z += speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyD) {
+//         player_transform.translation.z -= speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyS) {
+//         player_transform.translation.x += speed * time.delta_secs();
+//     }
+//     if keyboard.pressed(KeyCode::KeyF) {
+//         player_transform.translation.x -= speed * time.delta_secs();
+//     }
+// }
