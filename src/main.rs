@@ -1,11 +1,9 @@
 use avian3d::prelude::*;
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Default)]
 #[require(Transform, Visibility, SceneRoot)]
-struct Player {
-    material: Handle<StandardMaterial>,
-}
+struct Player;
 
 fn main() {
     App::new()
@@ -33,9 +31,7 @@ fn setup(
 
     // Dynamic physics object with a collision shape and initial angular velocity
     commands.spawn((
-        Player {
-            material: materials.add(Color::WHITE),
-        },
+        Player,
         RigidBody::Dynamic,
         Collider::sphere(1.0),
         AngularVelocity(Vec3::new(2.5, 3.5, 1.5)),
@@ -62,23 +58,16 @@ fn setup(
 }
 
 fn player_apply_force(
-    mut query: Query<(&mut ExternalForce, &Player)>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut query: Query<&mut ExternalForce, With<Player>>,
     keyboard: Res<ButtonInput<KeyCode>>,
 ) {
-    let (mut player_external_force, player) = query.single_mut();
+    let mut player_external_force = query.single_mut();
 
     if keyboard.just_pressed(KeyCode::KeyE) {
         player_external_force.apply_force(Vec3::Z * 10.0);
-        if let Some(material) = materials.get_mut(&player.material) {
-            material.base_color = Color::RED;
-        }
     }
     if keyboard.just_released(KeyCode::KeyE) {
         player_external_force.apply_force(Vec3::ZERO);
-        if let Some(material) = materials.get_mut(&player.material) {
-            material.base_color = Color::WHITE;
-        }
     }
 }
 
